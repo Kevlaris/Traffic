@@ -1458,6 +1458,7 @@ MonoBehaviour:
   segments: []
   nodePrefab: {fileID: 8866002913051743859, guid: bd60844e30c5cdd40b8a5ca819d524ee, type: 3}
   segmentPrefab: {fileID: 8814975213979184638, guid: 445f7476503923248900e41c22886e0f, type: 3}
+  vehiclePrefab: {fileID: 5275322234747346607, guid: 3268fcf4a8fca4c4089e6530ec24a240, type: 3}
 --- !u!4 &474803559
 Transform:
   m_ObjectHideFlags: 0
@@ -4987,7 +4988,7 @@ GameObject:
   - component: {fileID: 1478638959}
   - component: {fileID: 1478638961}
   m_Layer: 5
-  m_Name: MainPanel
+  m_Name: EditorPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -8,7 +8,7 @@ public class Network : MonoBehaviour
 
 	public List<Node> nodes;
 	public List<Segment> segments;
-	public GameObject nodePrefab, segmentPrefab;
+	public GameObject nodePrefab, segmentPrefab, vehiclePrefab;
 
 	int nodeId = 0;
 	int segmentId = 0;
@@ -112,6 +112,15 @@ public class Network : MonoBehaviour
 		segments.Remove(segment);
 		Destroy(segment.gameObject);
 	}
+
+	public Vehicle SpawnVehicle(Node node)
+	{
+		Vehicle vehicle = Instantiate(vehiclePrefab, transform).GetComponent<Vehicle>();
+		vehicle.transform.position = node.transform.position;
+		vehicle.currentNode = node;
+		return vehicle;
+	}
+
 
 	public List<int> FindShortestRoute(int startNodeId, int endNodeId)
 	{

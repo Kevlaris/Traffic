@@ -32,7 +32,12 @@ public class Node : MonoBehaviour
 	public void SetType(NodeType newType)
 	{
 		this.nodeType = newType;
-		//add logic
+		if (nodeType == NodeType.Source)
+		{
+			Vehicle vehicle = Network.instance.SpawnVehicle(this);
+			vehicle.currentNode = this;
+			vehicle.PlotRoute(4);
+		}
 	}
 
 	void UpdateConnectedSegments()

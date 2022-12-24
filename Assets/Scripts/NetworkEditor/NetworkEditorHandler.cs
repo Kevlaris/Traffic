@@ -30,7 +30,7 @@ public class NetworkEditorHandler : MonoBehaviour
 		if (Input.GetMouseButtonDown(0))
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, LayerMask.GetMask("RoadNetwork", "UI"));
+			RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, LayerMask.GetMask("Node", "UI", "Segment"));
 			if (hit.collider != null)
 			{
 				Debug.Log(hit.transform.gameObject.name);
