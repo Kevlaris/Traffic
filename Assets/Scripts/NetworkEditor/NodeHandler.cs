@@ -11,6 +11,65 @@ public class NodeHandler : MonoBehaviour
 
 	Node node;
 
+	public GameObject moveNodeText;
+	bool isMoving;
+	Vector2 originalPos;
+	Vector2 originalMousePos;
+
+	private void Update()
+	{
+		if (Input.GetButtonDown("Move") && !isMoving)
+		{
+			isMoving = true;
+			originalPos = node.transform.position;
+			originalMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Cursor.visible = false;
+			Cursor.lockState = CursorLockMode.Confined;
+		}
+		if (Input.GetButtonDown("Cancel"))
+		{
+			if (isMoving)
+			{
+				isMoving = false;
+				node.transform.position = originalPos;
+				originalPos = Vector2.zero;
+				originalMousePos = Vector2.zero;
+				Cursor.visible = true;
+				Cursor.lockState = CursorLockMode.None;
+			}
+			else if (NetworkEditorHandler.instance.isConnecting)
+			{
+				NetworkEditorHandler.instance.CancelConnection();
+			}
+			else
+			{
+				NetworkEditorHandler.instance.Deselect();
+			}
+		}
+
+		moveNodeText.SetActive(isMoving);
+
+		if (isMoving)
+		{
+			Vector2 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Vector2 delta = currentMousePos - originalMousePos;
+			Vector2 newPos = (Vector2)node.transform.position + (delta * 2.5f);
+			//snap when SHIFT is down
+			node.SetPosition(newPos);
+			originalMousePos = currentMousePos;
+			if (Input.GetMouseButtonDown(0))
+			{
+				isMoving = false;
+				originalPos = Vector2.zero;
+				originalMousePos = Vector2.zero;
+				x.text = node.transform.position.x.ToString();
+				y.text = node.transform.position.y.ToString();
+				Cursor.visible = true;
+				Cursor.lockState = CursorLockMode.None;
+			}
+		}
+	}
+
 	public void LoadNode(Node node)
 	{
 		this.node = node;

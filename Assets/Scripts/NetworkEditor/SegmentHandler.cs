@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class SegmentHandler : MonoBehaviour
@@ -10,6 +10,14 @@ public class SegmentHandler : MonoBehaviour
 	[SerializeField] Sprite[] directionSprites = new Sprite[3];
 	Segment segment;
 	Segment.Direction direction;
+
+	private void Update()
+	{
+		if (Input.GetButtonDown("Cancel"))
+		{
+			NetworkEditorHandler.instance.Deselect();
+		}
+	}
 
 	public void LoadSegment(Segment segment)
 	{

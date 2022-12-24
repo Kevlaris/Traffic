@@ -102,6 +102,12 @@ public class NetworkEditorHandler : MonoBehaviour
 		Select(Network.instance.CreateSegment(node1, node2));
 		node1 = null;
 	}
+	public void CancelConnection()
+	{
+		isConnecting = false;
+		nodeSelectText.SetActive(false);
+		node1 = null;
+	}
 
 	public void Remove(Node node)
 	{
