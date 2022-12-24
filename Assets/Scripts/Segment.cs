@@ -1,5 +1,7 @@
+using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(EdgeCollider2D))]
 public class Segment : MonoBehaviour
 {
 	public int id { get; private set; }
@@ -8,6 +10,7 @@ public class Segment : MonoBehaviour
 	public int lanes, speedLimit;
 
 	LineRenderer lineRenderer;
+	EdgeCollider2D edgeCollider;
 	bool init = false;
 
 	public enum Direction
@@ -20,6 +23,7 @@ public class Segment : MonoBehaviour
 	private void Awake()
 	{
 		lineRenderer = GetComponent<LineRenderer>();
+		edgeCollider = GetComponent<EdgeCollider2D>();
 	}
 
 	public void Initialize(Node node1, Node node2, int id)
@@ -39,6 +43,8 @@ public class Segment : MonoBehaviour
 		if (!init) return;
 		lineRenderer.SetPosition(0, Network.instance.GetNode(node1id).transform.position);
 		lineRenderer.SetPosition(1, Network.instance.GetNode(node2id).transform.position);
+		Vector2[] points = new Vector2[] { Network.instance.GetNode(node1id).transform.position, Network.instance.GetNode(node2id).transform.position };
+		edgeCollider.SetPoints(points.ToList());
 	}
 
 	public void SetLanes(int lanes)
