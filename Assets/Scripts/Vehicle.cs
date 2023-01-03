@@ -18,14 +18,17 @@ public class Vehicle : MonoBehaviour
 		network = Network.instance;
 		c = GetComponent<Collider2D>();
 		transform.rotation = Quaternion.Euler(0, 0, 0);
+		transform.forward = transform.right;
 	}
 
 	private void FixedUpdate()
 	{
 		if (destinationNodes.Count < 1)
-			return;
+		{
+			Destroy(gameObject);	// Delete vehicle when it has reached its destination
+		}
 
-		// If the vehicle has reached its destination, remove the node from the list
+		// If the vehicle has reached the next node, remove from list
 		if (Vector2.Distance(transform.position, currentNode.transform.position) < 0.1f)
 		{
 			destinationNodes.RemoveAt(0);
@@ -48,7 +51,9 @@ public class Vehicle : MonoBehaviour
 			Vector2 direction = nextNode.transform.position - transform.position;
 			// Move the vehicle in the direction of the next node
 			transform.position += (Vector3)direction.normalized * speed * 0.01f * Time.fixedDeltaTime;
-			transform.LookAt(nextNode.transform.position);
+			transform.position = new Vector3(transform.position.x, transform.position.y, -0.1f);
+			Debug.Log(Vector2.SignedAngle(transform.forward, nextNode.transform.position));
+			transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + Vector2.SignedAngle(transform.forward, nextNode.transform.position));
 			// Update the current node
 			currentNode = nextNode;
 		}

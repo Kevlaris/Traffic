@@ -5,10 +5,14 @@ public class NetworkEditorHandler : MonoBehaviour
 {
 	public static NetworkEditorHandler instance;
 
-	public GameObject editPanel, idle, nodeEdit, segmentEdit, nodeSelectText;
+	public GameObject editPanel, spawnPanel, idle, nodeEdit, segmentEdit, nodeSelectText;
 
 	bool isEditing = false;
 	public GameObject Editing { get; private set; }
+
+	[Header("Vehicle Spawner")]
+	[HideInInspector] public bool isSelecting, source;
+	[SerializeField] VehicleSpawner vehicleSpawner;
 
 	[Header("Segment Creation")]
 	public bool isConnecting = false;
@@ -25,8 +29,6 @@ public class NetworkEditorHandler : MonoBehaviour
 
 	void Update()
 	{
-		if (!isEditing) return;
-
 		if (Input.GetMouseButtonDown(0))
 		{
 			Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -36,13 +38,22 @@ public class NetworkEditorHandler : MonoBehaviour
 				Debug.Log(hit.transform.gameObject.name);
 				if (isConnecting)
 				{
+					if (!isEditing) return;
 					if (hit.collider.GetComponent<Node>())
 					{
 						EndConnection(hit.collider.GetComponent<Node>());
 					}
 				}
+				else if (isSelecting)
+				{
+					if (hit.collider.GetComponent<Node>())
+					{
+						EndSelection(hit.collider.GetComponent<Node>());
+					}
+				}
 				else
 				{
+					if (!isEditing) return;
 					if (hit.collider.GetComponent<Node>())
 					{
 						Select(hit.collider.GetComponent<Node>());
@@ -61,6 +72,13 @@ public class NetworkEditorHandler : MonoBehaviour
 		editPanel.SetActive(!isEditing);
 		isEditing = !isEditing;
 	}
+
+	public void ToggleSpawner()
+	{
+		spawnPanel.SetActive(!spawnPanel.activeSelf);
+	}
+
+	#region Selection
 
 	public void Select(Node node)
 	{
@@ -89,13 +107,17 @@ public class NetworkEditorHandler : MonoBehaviour
 		Editing = null;
 	}
 
+	#endregion
+
+	#region Segment Creation
+
 	public void StartConnection(Node node1)
 	{
 		this.node1 = node1;
 		isConnecting = true;
 		nodeSelectText.SetActive(true);
 	}
-	public void EndConnection(Node node2)
+	void EndConnection(Node node2)
 	{
 		isConnecting = false;
 		nodeSelectText.SetActive(false);
@@ -108,6 +130,10 @@ public class NetworkEditorHandler : MonoBehaviour
 		nodeSelectText.SetActive(false);
 		node1 = null;
 	}
+
+	#endregion
+
+	#region Removal
 
 	public void Remove(Node node)
 	{
@@ -142,6 +168,7 @@ public class NetworkEditorHandler : MonoBehaviour
 		isEditing = true;
 	}
 
+
 	public void Remove(Segment segment)
 	{
 		isEditing = false;
@@ -164,4 +191,44 @@ public class NetworkEditorHandler : MonoBehaviour
 		Destroy(prompt.gameObject);
 		isEditing = true;
 	}
+
+	#endregion
+
+	#region Vehicle Spawner
+
+	///	<summary>Start Node selection for Vehicle Spawner</summary>
+	/// <param name="source">Whether to select the Node as source (TRUE) or destination (FALSE)</param>
+	public void StartSelection(bool source)
+	{
+		if (isSelecting || isConnecting)
+		{
+			Debug.LogWarning("Already doing something else");
+			return;
+		}
+		isSelecting = true;
+		this.source = source;
+		nodeSelectText.SetActive(true);
+	}
+	///	<summary>End Node selection for Vehicle Spawner</summary>
+	void EndSelection(Node node)
+	{
+		isSelecting = false;
+		nodeSelectText.SetActive(false);
+		if (source)
+		{
+			vehicleSpawner.SetSource(node);
+		}
+		else
+		{
+			vehicleSpawner.SetDestination(node);
+		}
+	}
+	///	<summary>Cancel Node selection for Vehicle Spawner</summary>
+	public void CancelSelection()
+	{
+		isSelecting = false;
+		nodeSelectText.SetActive(false);
+	}
+
+	#endregion
 }
