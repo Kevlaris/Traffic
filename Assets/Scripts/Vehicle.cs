@@ -47,13 +47,23 @@ public class Vehicle : MonoBehaviour
 			{
 				speed = segment.speedLimit;
 			}
+
+			Vector3 nodePos = nextNode.transform.position;
+			nodePos.z = 0f;
+
 			// Calculate the direction to the next node
-			Vector2 direction = nextNode.transform.position - transform.position;
+			Vector2 direction = nodePos - transform.position;
 			// Move the vehicle in the direction of the next node
 			transform.position += (Vector3)direction.normalized * speed * 0.01f * Time.fixedDeltaTime;
 			transform.position = new Vector3(transform.position.x, transform.position.y, -0.1f);
-			Debug.Log(Vector2.SignedAngle(transform.forward, nextNode.transform.position));
-			transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + Vector2.SignedAngle(transform.forward, nextNode.transform.position));
+
+			// Face next node
+			Vector3 objectPos = transform.position;
+			nodePos.x -= objectPos.x;
+			nodePos.y -= objectPos.y;
+			float angle = Mathf.Atan2(nodePos.y, nodePos.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+
 			// Update the current node
 			currentNode = nextNode;
 		}
