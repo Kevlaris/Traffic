@@ -101,6 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentNode: {fileID: 0}
   destinationNodes: 
+  maxSpeed: 120
+  acceleration: 4
 --- !u!50 &5853525775871396470
 Rigidbody2D:
   serializedVersion: 4
@@ -109,7 +111,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5275322234747346607}
-  m_BodyType: 1
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0

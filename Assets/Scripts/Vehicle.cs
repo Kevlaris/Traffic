@@ -5,10 +5,16 @@ public class Vehicle : MonoBehaviour
 {
 	// The current node that the vehicle is at
 	public Node currentNode;
+	public Segment currentSegment;
 	// A list of nodes that the vehicle needs to visit
 	public List<int> destinationNodes;
+	public float maxSpeed = 120f;
+	float speed = 0;
+	float desiredSpeed;
+	public float acceleration = 10f;
 
 	Collider2D c;
+	Rigidbody2D rb;
 
 	Network network;
 
@@ -17,6 +23,7 @@ public class Vehicle : MonoBehaviour
 		// Find the Network script in the scene and store a reference to it
 		network = Network.instance;
 		c = GetComponent<Collider2D>();
+		rb = GetComponent<Rigidbody2D>();
 		transform.rotation = Quaternion.Euler(0, 0, 0);
 		transform.forward = transform.right;
 	}
@@ -25,7 +32,7 @@ public class Vehicle : MonoBehaviour
 	{
 		if (destinationNodes.Count < 1)
 		{
-			Destroy(gameObject);	// Delete vehicle when it has reached its destination
+			Destroy(gameObject);    // Delete vehicle when it has reached its destination
 		}
 
 		// If the vehicle has reached the next node, remove from list
@@ -38,23 +45,43 @@ public class Vehicle : MonoBehaviour
 		{
 			Node nextNode = network.GetNode(destinationNodes[0]);
 			// Find the segment connecting the current node and the next node
-			Segment segment;// = network.GetSegment(currentNode.id, nextNode.id);
+			currentSegment = network.GetSegment(currentNode.id, nextNode.id);
+			/*
 			Collider2D[] colliders = new Collider2D[1];
 			c.OverlapCollider(new ContactFilter2D { layerMask = LayerMask.GetMask("Segment"), useLayerMask = true }, colliders);
 			segment = colliders[0]?.transform.GetComponent<Segment>();
-			float speed = 70f;
-			if (segment != null)
+			*/
+
+			desiredSpeed = maxSpeed;
+			if (currentSegment != null)
 			{
-				speed = segment.speedLimit;
+				desiredSpeed = Mathf.Min(maxSpeed, currentSegment.speedLimit);
+			}
+
+			// Accelerate / decelerate towards desired speed
+			if (speed < desiredSpeed)
+			{
+				if (speed + 1f < desiredSpeed)
+				{
+					speed += acceleration * Time.fixedDeltaTime;
+				}
+			}
+			else if (speed > desiredSpeed)
+			{
+				if (speed - 1f > desiredSpeed)
+				{
+					speed -= acceleration * Time.fixedDeltaTime;
+				}
 			}
 
 			Vector3 nodePos = nextNode.transform.position;
 			nodePos.z = 0f;
 
 			// Calculate the direction to the next node
-			Vector2 direction = nodePos - transform.position;
+			//Vector2 direction = nodePos - transform.position;
 			// Move the vehicle in the direction of the next node
-			transform.position += (Vector3)direction.normalized * speed * 0.01f * Time.fixedDeltaTime;
+			//transform.position += transform.forward * speed * 0.01f * Time.fixedDeltaTime;
+
 			transform.position = new Vector3(transform.position.x, transform.position.y, -0.1f);
 
 			// Face next node
@@ -62,7 +89,8 @@ public class Vehicle : MonoBehaviour
 			nodePos.x -= objectPos.x;
 			nodePos.y -= objectPos.y;
 			float angle = Mathf.Atan2(nodePos.y, nodePos.x) * Mathf.Rad2Deg;
-			transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
+			transform.rotation = Quaternion.Euler(0, 0, angle);
+			rb.velocity = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad)) * speed * Time.fixedDeltaTime;	// Split angle into X and Y
 
 			// Update the current node
 			currentNode = nextNode;
@@ -76,7 +104,12 @@ public class Vehicle : MonoBehaviour
 	// A method to set the destination nodes for the vehicle
 	public void PlotRoute(int destinationId)
 	{
-		Debug.Log(currentNode.id + " - " + destinationId);
 		destinationNodes = network.FindShortestRoute(currentNode.id, destinationId);
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.green;
+		Gizmos.DrawLine(transform.position, transform.forward * speed);
 	}
 }
