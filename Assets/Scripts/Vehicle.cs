@@ -12,6 +12,7 @@ public class Vehicle : MonoBehaviour
 	float speed = 0;
 	float desiredSpeed;
 	public float acceleration = 10f;
+	public float brakingPower = 50f;
 
 	Collider2D c;
 	Rigidbody2D rb;
@@ -68,7 +69,11 @@ public class Vehicle : MonoBehaviour
 			}
 			else if (speed > desiredSpeed)
 			{
-				if (speed - 1f > desiredSpeed)
+				if (speed - 15f > desiredSpeed)
+				{
+					speed -= brakingPower * Time.fixedDeltaTime;	// intense brake if desired speed is very low
+				}
+				else if (speed - 1f > desiredSpeed)
 				{
 					speed -= acceleration * Time.fixedDeltaTime;
 				}

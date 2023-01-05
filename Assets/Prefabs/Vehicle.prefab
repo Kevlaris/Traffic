@@ -100,9 +100,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentNode: {fileID: 0}
+  currentSegment: {fileID: 0}
   destinationNodes: 
   maxSpeed: 120
-  acceleration: 4
+  acceleration: 10
+  brakingPower: 50
 --- !u!50 &5853525775871396470
 Rigidbody2D:
   serializedVersion: 4
